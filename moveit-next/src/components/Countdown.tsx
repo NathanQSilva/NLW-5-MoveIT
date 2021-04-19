@@ -1,28 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
+import { CountdownContext } from '../contexts/CountdownContext';
 import styles from '../styles/components/Contdown.module.css';
 
 export function Contdown () {
-    const [time, setTime] = useState(25 * 60);
-    const [active, setActive] = useState(false);
-
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
+    const {
+        minutes,
+        seconds,
+        hasFinished,
+        isActive,
+        startContdown,
+        resetCountdown
+    } = useContext(CountdownContext)
 
     const [minutesLeft, minutesRight] = String(minutes).padStart(2, '0').split('');
     const [secondLeft, secondRight] = String(seconds).padStart(2, '0').split('');
-
-    function startContdown () {
-        setActive(true);
-
-    }
-    
-    useEffect(() => {
-        if (active && time > 0) {
-            setTimeout(() => {
-                setTime(time - 1);
-            }, 1000);
-        }
-    }, [active, time])
 
     return (
         <div>
@@ -38,13 +29,35 @@ export function Contdown () {
                 </div>
             </div>
 
-            <button
-                type="button"
+            { hasFinished ? (
+                <button
+                disabled
                 className={styles.counddownButton}
-                onClick={startContdown}
-            >
-                Iniciar um ciclo
-            </button>
+                >
+                    Ciclo encerrado
+                </button>
+            ) : (
+                <>
+                    { isActive ? (
+                        <button
+                        type="button"
+                        className={`${styles.counddownButton} ${styles.counddownButtonActive}`}
+                        onClick={resetCountdown}
+                        >
+                            Abandonar ciclo
+                        </button>
+                    ) : (
+                        <button
+                        type="button"
+                        className={styles.counddownButton}
+                        onClick={startContdown}
+                        >
+                            Iniciar ciclo
+                        </button>
+                    ) }
+                </>
+                ) }
+            
         </div>
     );
 }
